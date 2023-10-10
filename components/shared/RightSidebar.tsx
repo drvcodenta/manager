@@ -1,7 +1,8 @@
 function RightSidebar(){
     return(
-        <div>
-            RightSidebar
+        <div className="justify-center absolute h-full w-2/12 top-0 right-0 shadow-xl">
+        <div className="space-y-0">TeamMates</div>
+        <div className="bottom-0">Add User</div>
         </div>
     )
 }
