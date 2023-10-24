@@ -1,8 +1,7 @@
-import Bottombar from "@/components/shared/Bottombar";
 import Topbar from "@/components/shared/Topbar";
-import LeftSidebar from "@/components/shared/LeftSidebar";
 import RightSidebar from "@/components/shared/RightSidebar";
 import React from "react";
+import BottomBar from "@/components/shared/BottomBar";
 
 export default function RootLayout({
   children,
@@ -13,6 +12,7 @@ export default function RootLayout({
     <>
     <Topbar />
     <RightSidebar />
+    <BottomBar />
     </>
   )
 }
