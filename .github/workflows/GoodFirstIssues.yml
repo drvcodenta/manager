@@ -11,4 +11,4 @@ jobs:
         with:
           project: Good first issues
           column: Assigned
-          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          repo-token: ${{ secrets.FIRST }}
