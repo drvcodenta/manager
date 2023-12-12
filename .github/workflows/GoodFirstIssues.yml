@@ -27,7 +27,7 @@ jobs:
       - name: Move card to assigned column
         id: move_card
         run: |
-          project_id=$(jq -r ".[0].id" < "${{ steps.get_project.outputs.stdout }}")
+          project_id=$(jq -r '.[0].id' < $${{ steps.get_project.outputs.stdout }})
           assignee=${{ steps.get_assignee.outputs.assignee }}
           column_id=$(jq -r '.[0].columns[] | select(.name == "Assigned") | .id' < ${{ steps.get_project.outputs.stdout }})
           card_id=$(jq -r '.[0].cards[] | select(.contentId == ${{ github.event.issue.number }}) | .id' < ${{ steps.get_project.outputs.stdout }})
