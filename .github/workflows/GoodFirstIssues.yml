@@ -24,12 +24,12 @@ jobs:
         run: |
           curl \
             -H "Authorization: Bearer ${{ secrets.FIRST }}" \
-            https://api.github.com/repos/${{ github.repository }}/projects
+            https://api.github.com/repos/${{ github.repository }}/projects > /tmp/project_data.json
       - name: Move card to assigned column
         id: move_card
         run: |
-          project_data="${{ steps.get_project.outputs.stdout }}"
-          project_id=$(jq -r '.[0].id' < "$project_data")
+          project_id=$(jq -r '.[0].id' < /tmp/project_data.json)
+          rm /tmp/project_data.json
           assignee=${{ steps.get_assignee.outputs.assignee }}
           column_id=$(jq -r '.[0].columns[] | select(.name == "Assigned") | .id' < $(steps.get_project.outputs.stdout))
           card_id=$(jq -r '.[0].cards[] | select(.contentId == ${{ github.event.issue.number }}) | .id' < $(steps.get_project.outputs.stdout))
