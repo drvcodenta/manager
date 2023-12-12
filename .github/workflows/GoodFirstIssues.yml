@@ -13,7 +13,8 @@ jobs:
       - name: Get assigned user
         id: get_assignee
         run: |
-          if [[ ${{ github.event.issue.assignee.login }} ]] then
+          if [[ ${{ github.event.issue.assignee.login }} ]] 
+          then
             echo "assignee=${{ github.event.issue.assignee.login }}"
           else
             echo "assignee=unassigned"
