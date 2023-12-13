@@ -15,7 +15,7 @@ jobs:
         run: |
           if [[ ${{ github.event.issue.assignee.login }} ]] 
           then
-            assigned_user = $(echo "assignee=${{ github.event.issue.assignee.login }}")
+            assigned_user = "assignee=${{ github.event.issue.assignee.login }}"
           else
             assigned_user = "assignee=unassigned"
           fi
