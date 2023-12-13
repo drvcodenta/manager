@@ -15,9 +15,9 @@ jobs:
         run: |
           if [[ ${{ github.event.issue.assignee.login }} ]] 
           then
-            echo "assignee=${{ github.event.issue.assignee.login }}" > /tmp/project_data1.json
+            assigned_user = $(echo "assignee=${{ github.event.issue.assignee.login }}")
           else
-            echo "assignee=unassigned"
+            assigned_user = "assignee=unassigned"
           fi
       - name: Get project information
         id: get_project
@@ -29,8 +29,7 @@ jobs:
         id: move_card
         run: |
           project_id=$(jq -r '.[0].id' < /tmp/project_data.json)
-          assignee=/tmp/project_data1.json
-          rm /tmp/project_data1.json
+          assignee=assigned_user
           column_id=$(jq -r '.[0].columns[] | select(.name == "Assigned") | .id' < /tmp/project_data.json)
           card_id=$(jq -r '.[0].cards[] | select(.contentId == ${{ github.event.issue.number }}) | .id' < /tmp/project_data.json)
           rm /tmp/project_data.json
