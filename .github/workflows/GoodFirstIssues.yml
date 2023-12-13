@@ -6,37 +6,33 @@ on:
       types: [opened, reopened]
 
 jobs:
-  move-card:
+  move_card:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Get assigned user
-        id: get_assignee
+      - name: Get issue and project data
         run: |
-          if [[ ${{ github.event.issue.assignee.login }} ]] 
-          then
-            assigned_user="${{ github.event.issue.assignee.login }}"
-          else
-            assigned_user="unassigned"
+          issue_url="{{ github.event.issue.url }}"
+          column_id=$(curl -sSfL "$issue_url/projects/columns?organization=YOUR_ORGANIZATION&repo=YOUR_REPOSITORY" | jq -r '.[] | select(.name == "Assigned") | .id')
+          project_id=$(curl -sSfL "$issue_url/projects" | jq -r '.id')
+        env:
+          YOUR_ORGANIZATION: your_organization_name
+          YOUR_REPOSITORY: your_repository_name
+      - name: Get card ID for current issue
+        run: |
+          card_id=$(curl -sSfL "https://api.github.com/projects/columns/$column_id/cards?organization=$YOUR_ORGANIZATION&repo=$YOUR_REPOSITORY&per_page=100" | jq -r '.[] | select(.contentUrl == "{{ github.event.issue.url }}") | .id')
+          if [[ -z "$card_id" ]]; then
+            echo "Card for this issue not found in column: $column_id"
+            exit 1
           fi
-      - name: Get project information
-        id: get_project
+        env:
+          YOUR_ORGANIZATION: your_organization_name
+          YOUR_REPOSITORY: your_repository_name
+      - name: Move card to Assigned column
         run: |
-          curl \
-            -H "Authorization: Bearer ${{ secrets.FIRST }}" \
-            https://api.github.com/repos/${{ github.repository }}/projects > /tmp/project_data.json
-      - name: Move card to assigned column
-        id: move_card
-        run: |
-          project_id=$(jq -r '.[0].id' < /tmp/project_data.json)
-          column_id=$(jq -r '.[0].columns[] | select(.name == "Assigned") | .id' < /tmp/project_data.json)
-          card_id=$(jq -r '.[0].cards[] | select(.contentId == ${{ github.event.issue.number }}) | .id' < /tmp/project_data.json)
-          if [[ $card_id != "" ]] 
-          then
-            curl \
-              -X POST \
-              -H "Authorization: Bearer ${{ secrets.FIRST }}" \
-              https://api.github.com/projects/columns/$column_id/cards/$card_id/moves \
-              -d "position=bottom"
-            rm /tmp/project_data.json
-          fi
+          curl -X POST https://api.github.com/projects/columns/$column_id/cards/$card_id/moves \
+            -H "Authorization: ${{ secrets.GITHUB_TOKEN }}" \
+            -d 'position=bottom'
+        env:
+          GITHUB_TOKEN: ${{ secrets.FIRST }}
+
