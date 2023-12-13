@@ -15,9 +15,9 @@ jobs:
         run: |
           if [[ ${{ github.event.issue.assignee.login }} ]] 
           then
-            assigned_user = "assignee=${{ github.event.issue.assignee.login }}"
+            assigned_user="assignee=${{ github.event.issue.assignee.login }}"
           else
-            assigned_user = "assignee=unassigned"
+            assigned_user="assignee=unassigned"
           fi
       - name: Get project information
         id: get_project
