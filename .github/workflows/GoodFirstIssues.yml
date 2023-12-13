@@ -1,38 +1,14 @@
-name: Manage Project Board Issues
-
+name: Move card to another column
 on:
   issues:
-    types: [assigned, unassigned]
-
+    types: [assigned]
 jobs:
-  move-issue:
+  move-card:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Get Issue and Project Details
-        uses: actions/github-script@v6
+      - name: Move card to another column
+        uses: alex-page/github-project-automation-plus@7ffb872c64bd809d23563a130a0a97d01dfa8f43
         with:
-          github-token: ${{ secrets.FIRST }}
-          script: |
-            const issue = context.issue;
-            const project = await github.projects.getProject(issue.organization, issue.repo, issue.project_card.column_id);
-            return { project, currentColumnId: issue.project_card.column_id };
-
-      - name: Move Issue based on Assignment
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.FIRST }}
-          args: |
-            - project_id ${{ steps.get-details.outputs.project.id }}
-            - target_column ${{ github.event.action == 'assigned' ? 'Assigned' : 'Contributors needed' }}
-            - current_column_id ${{ steps.get-details.outputs.currentColumnId }}
-          script: |
-            const projectId = args[0];
-            const targetColumn = args[1];
-            const currentColumnId = args[2];
-
-            if (targetColumn !== currentColumnId) {
-              await github.projects.moveCard({ project_id: projectId, card_id: context.issue.id, column_id: targetColumn });
-              console.log(`Moved issue #${context.issue.number} to "${targetColumn}"`);
-            }
-
+          project: <PROJECT_NAME>
+          column: <COLUMN_NAME>
+          repo-token: ${{ secrets.FIRST }}
