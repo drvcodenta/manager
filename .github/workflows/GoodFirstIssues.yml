@@ -1,7 +1,7 @@
 name: Manage Project Board Issues
 
 on:
-  issue:
+  issues:
     types: [assigned, unassigned]
 
 jobs:
