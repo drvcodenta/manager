@@ -1,14 +1,16 @@
-name: Move card to another column
+name: Move card to Assigned column
 on:
   issues:
-    types: [assigned]
+    types: [assigned, unassigned]
 jobs:
   move-card:
     runs-on: ubuntu-latest
     steps:
-      - name: Move card to another column
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Move card to the Assigned column
         uses: alex-page/github-project-automation-plus@7ffb872c64bd809d23563a130a0a97d01dfa8f43
         with:
-          project: <PROJECT_NAME>
+          project: https://api.github.com/repos/${{ github.repository }}/projects
           column: <COLUMN_NAME>
           repo-token: ${{ secrets.FIRST }}
