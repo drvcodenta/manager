@@ -31,7 +31,6 @@ jobs:
           project_id=$(jq -r '.[0].id' < /tmp/project_data.json)
           column_id=$(jq -r '.[0].columns[] | select(.name == "Assigned") | .id' < /tmp/project_data.json)
           card_id=$(jq -r '.[0].cards[] | select(.contentId == ${{ github.event.issue.number }}) | .id' < /tmp/project_data.json)
-          rm /tmp/project_data.json
           if [[ $card_id != "" ]] 
           then
             curl \
@@ -39,4 +38,5 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.FIRST }}" \
               https://api.github.com/projects/columns/$column_id/cards/$card_id/moves \
               -d "position=bottom"
+            rm /tmp/project_data.json
           fi
