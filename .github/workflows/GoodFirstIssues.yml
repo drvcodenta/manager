@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Get issue and project data
         run: |
-          issue_url="{{ github.event.issue.url }}"
+          issue_url="${{ github.event.issue.url }}"
           column_id=$(curl -sSfL "$issue_url/projects/columns?organization=YOUR_ORGANIZATION&repo=YOUR_REPOSITORY" | jq -r '.[] | select(.name == "Assigned") | .id')
           project_id=$(curl -sSfL "$issue_url/projects" | jq -r '.id')
         env:
