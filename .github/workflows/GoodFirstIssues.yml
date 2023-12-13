@@ -1,16 +1,40 @@
-name: Move card to Assigned column
+name: Move card to assigned column
+
 on:
   issues:
     types: [assigned, unassigned]
+
 jobs:
   move-card:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Move card to the Assigned column
-        uses: alex-page/github-project-automation-plus@7ffb872c64bd809d23563a130a0a97d01dfa8f43
-        with:
-          project: https://api.github.com/repos/${{ github.repository }}/projects
-          column: <COLUMN_NAME>
-          repo-token: ${{ secrets.FIRST }}
+      - uses: actions/checkout@v4
+      - name: Get assigned user
+        id: get_assignee
+        run: |
+          if [[ ${{ github.event.issue.assignee.login }} ]] 
+          then
+            assigned_user="${{ github.event.issue.assignee.login }}"
+          else
+            assigned_user="unassigned"
+          fi
+      - name: Get project information
+        id: get_project
+        run: |
+          curl \
+            -H "Authorization: Bearer ${{ secrets.FIRST }}" \
+            https://api.github.com/repos/${{ github.repository }}/projects
+      - name: Move card to assigned column
+        id: move_card
+        run: |
+          project_id=$(jq -r '.[0].id' < $(steps.get_project.outputs.stdout))
+          column_id=$(jq -r '.[0].columns[] | select(.name == "Assigned") | .id' < $(steps.get_project.outputs.stdout))
+          card_id=$(jq -r '.[0].cards[] | select(.contentId == ${{ github.event.issue.number }}) | .id' < $(steps.get_project.outputs.stdout))
+          if [[ $card_id != "" ]] 
+          then
+            curl \
+              -X POST \
+              -H "Authorization: Bearer ${{ secrets.FIRST }}" \
+              https://api.github.com/projects/columns/$column_id/cards/$card_id/moves \
+              -d "position=bottom"
+          fi
