@@ -21,7 +21,7 @@ jobs:
       - name: Get project information
         id: get_project
         run: |
-          response=$(curl -H "Authorization: token ${{ secrets.FIRST }}" -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/repos/${{ github.repository }}/projects)
+          response=$(curl -I -H "Authorization: token ${{ secrets.FIRST }}" -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/repos/${{ github.repository }}/projects)
           echo "Response: $response"
           project_id=$(echo "$response" | jq -r '.[0].id')
           echo "Project ID: $project_id"
