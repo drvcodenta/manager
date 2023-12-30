@@ -22,7 +22,9 @@ jobs:
         id: get_project
         run: |
           response=$(curl -H "Authorization: token ${{ secrets.FIRST }}" https://api.github.com/repos/${{ github.repository }}/projects)
+          echo "Response: $response"
           project_id=$(echo "$response" | jq -r '.[0].id')
+          echo "Project ID: $project_id"
           echo "::set-output name=id::$project_id"
       - name: Move card to assigned column
         id: move_card
